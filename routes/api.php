@@ -16,8 +16,9 @@ use Illuminate\Http\Request;
 Route::post('login', 'API\UserController@login');
 Route::post('register', 'API\UserController@register');
 
-Route::group(['middleware' => 'auth:api'], function(){
-	Route::get('/users', function (Request $request) {
-        return 123;
-    });
+Route::group(['middleware' => 'ApiToken'], function(){
+	Route::get('/contacts', 'API\UserController@users');
+    Route::post('/create-contact','API\UserController@createContact');
+    Route::get('/contact/{detail}', 'API\UserController@getUserById');
+    Route::put('update/{id}','API\UserController@updateUserById');
 });
