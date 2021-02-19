@@ -8,27 +8,29 @@ use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserRequestRegis;
 use App\Http\Requests\RequestContact;
 use App\User;
+use App\Contact;
 use Illuminate\Support\Facades\Hash;
-
+use Auth;
 class UserController extends Controller
 {
 public function __construct()
 {
     $this->user = new User();
+    $this->contact = new Contact();
 }
-public function users()
+public function userContacts()
 {
-    $users= $this->user->users();
+    $users= $this->contact->userContacts();
     if($users->count()){
         return response()->json([
             'status_code' => 200,
-            'message' => 'users fetched successfully',
+            'message' => 'Contacts fetched successfully',
              'data' => $users   
             ]);
     }
     return response()->json([
         'status_code' => 200,
-        'message' => 'users not found',
+        'message' => 'contacts not found',
          'data' => []   
         ]);
     
@@ -54,7 +56,32 @@ public function updateUserById(Request $request,$id)
 }
 public function createContact(RequestContact $request)
 {
+   $validatedData = $request->validated();
+   return $this->user->createUserContact($validatedData);    
    
-    dd(1);
 }
+
+public function userLogout(Request $request)
+{
+  $token = $request->bearerToken('api-token'); 
+  $user = User::where('id',Auth::user()->id)->first();
+  foreach($user->tokens as $token) {
+    $token->revoke();   
+}
+  if($user != null) {
+    $userArray = ['api_token' => null];
+    $logout = User::where('id',$user->id)->update($userArray);
+    if($logout) {
+    Auth::user()->AauthAcessToken()->delete();
+      return response()->json([
+        'message' => 'User Logged Out',
+      ]);
+    }
+  } else {
+    return response()->json([
+      'message' => 'User not found',
+    ]);
+  }
+}
+
 }

@@ -15,10 +15,10 @@ use Illuminate\Http\Request;
 
 Route::post('login', 'API\UserController@login');
 Route::post('register', 'API\UserController@register');
-
-Route::group(['middleware' => 'ApiToken'], function(){
-	Route::get('/contacts', 'API\UserController@users');
+Route::group(['middleware' => ['ApiToken']], function(){
+	Route::get('/contacts', 'API\UserController@userContacts');
     Route::post('/create-contact','API\UserController@createContact');
     Route::get('/contact/{detail}', 'API\UserController@getUserById');
     Route::put('update/{id}','API\UserController@updateUserById');
+    Route::get('userlogout','API\UserController@userLogout');
 });

@@ -27,7 +27,7 @@ class RequestContact extends FormRequest
             'first_name' => 'required',
             'last_name' => 'required',
             'email' => 'required|email|unique:users',
-            'phone' => 'required',
+            'phone' => 'required|regex:/[0-9]{9}/|max:12',
         ];
     }
 }

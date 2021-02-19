@@ -7,6 +7,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\HasApiTokens;
+use App\Contact;
+use App\OauthAccessToken;
+use Auth;
 class User extends Authenticatable
 {
     use HasApiTokens, Notifiable;
@@ -127,4 +130,37 @@ class User extends Authenticatable
     {
         echo "isd:".$id."<br>".$request->first_name;
     }
+
+    public function createUserContact($validatedData)
+    {
+     $userArray = [
+         'first_name'      => $validatedData['first_name'],
+         'last_name'      => $validatedData['last_name'],
+          'email' => $validatedData['email'],
+         'phone' => $validatedData['phone'],
+          ]; 
+      $userContact =  $this->create($userArray);
+      if($userContact){
+        if(contact::create(
+          [
+            'user_id' => Auth::user()->id,
+            'contact_id' => $userContact->id
+         ]
+          )){
+            $userArray['user_id'] = Auth::user()->id;
+            $userArray['contact_id'] = $userContact->id;
+            return response()->json(
+              [
+               'status_code' => 200,
+              'message' => 'Contact created successfully',
+              'data' =>    $userArray
+              ]
+            );
+          }
+      }
+     
+    }
+    public function AauthAcessToken(){
+      return $this->hasMany(OauthAccessToken::class);
+  }
 }
