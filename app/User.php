@@ -107,29 +107,6 @@ class User extends Authenticatable
      select('id','first_name','last_name','email','phone','image')
      ->get();
     }
-    public function getUserDetailById($id)
-    {
-       $user = $this->
-       select('id','first_name','last_name','email','phone','image')
-       ->where('id',$id)->first();
-       if($user != null){
-        return response()->json([
-            'status_code' => 200,
-            'message' => 'User fetched successfully',
-            'data' => $user
-          ]); 
-       }
-       return response()->json([
-        'status_code' => 404,
-        'message' => 'User not found',
-        'data' => []
-      ]); 
-
-    }
-    public function updateuser($request,$id)
-    {
-        echo "isd:".$id."<br>".$request->first_name;
-    }
 
     public function createUserContact($validatedData)
     {

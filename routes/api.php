@@ -18,7 +18,7 @@ Route::post('register', 'API\UserController@register');
 Route::group(['middleware' => ['ApiToken','auth:api']], function(){
 	Route::get('/contacts', 'API\UserController@userContacts');
     Route::post('/create-contact','API\UserController@createContact');
-    Route::get('/contact/{detail}', 'API\UserController@getUserById');
-    Route::put('update/{id}','API\UserController@updateUserById');
+    Route::get('/contact/{id}', 'API\UserController@getContactById');
+    Route::put('update-contact/{id}','API\UserController@updateContactById');
     Route::get('userlogout','API\UserController@userLogout');
 });

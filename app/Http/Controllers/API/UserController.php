@@ -46,13 +46,13 @@ public function register(UserRequestRegis $request)
     return $this->user->create_user($validatedData);
     
 }
-public function getUserById($id)
+public function getContactById($id)
 {
-    return $this->user->getUserDetailById($id);
+    return $this->contact->getContactDetailById($id);
 }
-public function updateUserById(Request $request,$id)
+public function updateContactById(Request $request,$id)
 {
-  return $this->user->updateuser($request,$id);
+  return $this->contact->updateContact($request,$id);
 }
 public function createContact(RequestContact $request)
 {

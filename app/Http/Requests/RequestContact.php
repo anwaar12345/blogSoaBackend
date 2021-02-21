@@ -30,4 +30,15 @@ class RequestContact extends FormRequest
             'phone' => 'required|regex:/[0-9]{9}/|max:12',
         ];
     }
+
+
+    public function messages()
+    {
+        return [
+            'first_name.required' => 'The :attribute field can not be blank',
+            'last_name.required' => 'The :attribute field can not be blank',
+            'email.required' => 'The :attribute field can not be blank',
+            'phone.required' => 'The :attribute field can not be blank'
+        ];
+    }
 }
