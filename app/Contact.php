@@ -40,6 +40,9 @@ class Contact extends Model
     public function updateContact($request,$id)
     {
         $contact_id = $this->where('id',$id)->pluck('contact_id');
+        if(!count($contact_id)){
+         return "user not found";
+        }
         $contact = [
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
@@ -60,4 +63,5 @@ class Contact extends Model
               ]);
         }
     }
+    
 }

@@ -21,4 +21,5 @@ Route::group(['middleware' => ['ApiToken','auth:api']], function(){
     Route::get('/contact/{id}', 'API\UserController@getContactById');
     Route::put('update-contact/{id}','API\UserController@updateContactById');
     Route::get('userlogout','API\UserController@userLogout');
+    Route::delete('delete-contact/{id}', 'API\UserController@deleteContactById');
 });

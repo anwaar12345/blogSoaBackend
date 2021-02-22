@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserRequestRegis;
 use App\Http\Requests\RequestContact;
+use App\Http\Requests\ContactUpdate;
 use App\User;
 use App\Contact;
 use Illuminate\Support\Facades\Hash;
@@ -50,7 +51,7 @@ public function getContactById($id)
 {
     return $this->contact->getContactDetailById($id);
 }
-public function updateContactById(Request $request,$id)
+public function updateContactById(ContactUpdate $request,$id)
 {
   return $this->contact->updateContact($request,$id);
 }
@@ -82,6 +83,12 @@ public function userLogout(Request $request)
       'message' => 'User not found',
     ]);
   }
+}
+
+
+public function deleteContactById($id)
+{
+  // return $this->contact->deleteContactById
 }
 
 }
