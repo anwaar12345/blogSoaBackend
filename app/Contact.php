@@ -9,9 +9,25 @@ class Contact extends Model
     protected $fillable = [
         'user_id', 'contact_id',
     ];
-    public function userContacts()
+    public function userContacts($request)
     {
-        return $this->with(['contacts:id,first_name,last_name,email,phone'])->where('user_id',Auth::user()->id)->get();
+        $user = $this->query();
+        if(isset($request->first_name)){
+            $user = $user->whereHas('contacts',function($query) use($request){
+                $query->where("first_name","LIKE","%".$request->first_name."%");
+            });
+            $user = $user->whereHas('contacts',function($query) use($request){
+                $query->where("last_name","LIKE","%".$request->last_name."%");
+            });
+            $user = $user->with(['contacts:id,first_name,last_name,email,phone'])->where('user_id',Auth::user()->id)->get();
+            return $user;
+        }else{
+            $user = $user->with(['contacts:id,first_name,last_name,email,phone'])->where('user_id',Auth::user()->id);
+        }
+
+        $user = $user->latest()
+        ->get();
+        return $user;
     }
 
     public function contacts()

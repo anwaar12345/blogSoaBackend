@@ -19,10 +19,11 @@ public function __construct()
     $this->user = new User();
     $this->contact = new Contact();
 }
-public function userContacts()
+public function userContacts(Request $request)
 {
-    $users= $this->contact->userContacts();
+    $users= $this->contact->userContacts($request);
     if($users->count()){
+
         return response()->json([
             'status_code' => 200,
             'message' => 'Contacts fetched successfully',
