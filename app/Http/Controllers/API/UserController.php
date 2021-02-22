@@ -88,7 +88,7 @@ public function userLogout(Request $request)
 
 public function deleteContactById($id)
 {
-  // return $this->contact->deleteContactById
+  return $this->contact->ContactdeleteById($id);
 }
 
 }

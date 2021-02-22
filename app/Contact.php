@@ -41,7 +41,10 @@ class Contact extends Model
     {
         $contact_id = $this->where('id',$id)->pluck('contact_id');
         if(!count($contact_id)){
-         return "user not found";
+            return response()->json([
+                'status_code' => 404,
+                'message' => 'Contact not found'
+              ]);
         }
         $contact = [
             'first_name' => $request->first_name,
@@ -63,5 +66,23 @@ class Contact extends Model
               ]);
         }
     }
-    
+    public function ContactdeleteById($id)
+    {
+        $user = $this->find($id);
+        if($user != NULL){
+            $contact = User::where('id',$user->contact_id)->get();
+            $user->delete();
+            if(User::where('id',$user->contact_id)->delete()){
+                return response()->json([
+                    'status_code' => 200,
+                    'message' => 'Contact deleted successfully',
+                    'data' => $contact[0]
+                  ]);
+            }
+        }
+        return response()->json([
+            'status_code' => 404,
+            'message' => 'Contact not found'
+          ]);
+    }
 }
