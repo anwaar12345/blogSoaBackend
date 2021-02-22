@@ -12,13 +12,20 @@ class Contact extends Model
     public function userContacts($request)
     {
         $user = $this->query();
-        if(isset($request->first_name)){
+        if(isset($request->first_name) || isset($request->last_name) || isset($request->email) || isset($request->phone)){
             $user = $user->whereHas('contacts',function($query) use($request){
                 $query->where("first_name","LIKE","%".$request->first_name."%");
             });
             $user = $user->whereHas('contacts',function($query) use($request){
                 $query->where("last_name","LIKE","%".$request->last_name."%");
             });
+            $user = $user->whereHas('contacts',function($query) use($request){
+                $query->where("email","LIKE","%".$request->email."%");
+            });
+            $user = $user->whereHas('contacts',function($query) use($request){
+                $query->where("last_name","LIKE","%".$request->phone."%");
+            });
+
             $user = $user->with(['contacts:id,first_name,last_name,email,phone'])->where('user_id',Auth::user()->id)->get();
             return $user;
         }else{
