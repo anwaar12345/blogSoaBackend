@@ -15,11 +15,9 @@ class ApiToken
      */
     public function handle($request, Closure $next)
     {
-        if($request->bearerToken('api-token')){
-          return $next($request);
+        if(!$request->bearerToken('api-token')){
+           return ['message' => 'un authorized'];
         }
-        return response()->json(
-            ['message' => 'un authorized']
-        );
+        return $next($request);
     }
 }
