@@ -33,6 +33,7 @@ class UserRequest extends FormRequest
     {
         return [
             'email.required' => 'The :attribute field can not be blank',
+            'email.email' => 'The email should be valid',
             'password.required' => 'The :attribute field can not be blank'
         ];
     }

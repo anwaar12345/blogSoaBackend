@@ -38,7 +38,8 @@ class RequestContact extends FormRequest
             'first_name.required' => 'The :attribute field can not be blank',
             'last_name.required' => 'The :attribute field can not be blank',
             'email.required' => 'The :attribute field can not be blank',
-            'phone.required' => 'The :attribute field can not be blank'
+            'phone.required' => 'The :attribute field can not be blank',
+            'phone.regex' => 'The phone number should be valid'
         ];
     }
 }

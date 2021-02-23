@@ -36,7 +36,9 @@ class ContactUpdate extends FormRequest
             'first_name.required' => 'The :attribute field can not be blank',
             'last_name.required' => 'The :attribute field can not be blank',
             'email.required' => 'The :attribute field can not be blank',
-            'phone.required' => 'The :attribute field can not be blank'
+            'phone.required' => 'The :attribute field can not be blank',
+            'phone.regex' => 'The :attribute should be a number',
+            'phone.max' => 'The :attribute should not be more than 12'
         ];
     }
 }
