@@ -10,6 +10,7 @@ use Laravel\Passport\HasApiTokens;
 use App\Contact;
 use App\OauthAccessToken;
 use Auth;
+use Helpers;
 class User extends Authenticatable
 {
     use HasApiTokens, Notifiable;
@@ -39,11 +40,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
     public function create_user($validatedData)
     {
         $file_name =  str_replace(' ','_',$validatedData['first_name']).".".$validatedData['image']->getClientOriginalExtension();
+       
         if( $file_path = $validatedData['image']->move(public_path().'/images/',$file_name)){
-            $userArray = [
+          
+          $userArray = [
                 'first_name'      => $validatedData['first_name'],
                 'last_name'      => $validatedData['last_name'],
                 'password'  => Hash::make($validatedData['password']),
@@ -51,53 +55,62 @@ class User extends Authenticatable
                 'email' => $validatedData['email'],
                 'phone' => $validatedData['phone'],
               ];
+
               $user = User::create($userArray);
               $token = $user->createToken('blogSoaRegis')->accessToken;
               $user->api_token = $token;
               $userArray['api_token'] = $token;
+              
               if($user->save()){
-                return response()->json([
-                    'status_code' => 200,
-                    'status' => 'Success',
-                    'message' => 'User Register successfully.',
-                    'data' => $userArray
-                ]);
+              
+              unset($userArray['password']);  
+              $status_code = 201;
+              $status = 'Success';
+              $message = 'User Register successfully.';
+
               }else{
-                return response()->json([
-                    'status' => 'Failed',
-                    'message' => 'User Registeration Failed',
-                    'data' => []
-                ]);
+                
+                $status_code = 202;
+                $status = 'Failed';
+                $message = 'User Registeration Failed';
+                $userArray = [];
+                
               }
-    
+              
+              return Helpers::makeResponse($status_code,$status,$message,$userArray);
         }
     }
     public function login($validatedData)
     {
         $user = $this->where('email',$validatedData['email'])->first();
+
         if($user!=null){
-            if(password_verify($validatedData['password'],$user->password)){
-               $login =  $this->where('email',$validatedData['email'])->update(['api_token' =>  $user->createToken('blogSoaRegis')->accessToken]);
-                if($login){
-                    return response()->json([
-                        'status_code' => 200,
-                        'message' => 'User loged in successfully',
-                        'data' => $user
-                      ]); 
-                }
+
+            if(password_verify($validatedData['password'],$user->password) &&
+             $this->where('email',$validatedData['email'])
+             ->update(['api_token' =>  $user->createToken('blogSoaRegis')->accessToken])){
+                  $status_code = 200;
+                  $status = 'Success';
+                  $message = 'User Logedin successfully.';
             }else{
-                return response()->json([
-                    'status_code' => 401,
-                    'message' => 'User login failed',
-                  ]); 
+              $user = [];
+              $status_code = 401;
+              $status = 'Failed';
+              $message = 'User login failed';
             }
-
-
+              
+              
+             
         }else {
-            return response()->json([
-              'message' => 'User not found',
-            ]);
+
+          $user = [];
+          $status_code = 404;
+          $status = 'Failed';
+          $message = 'User not found';
+
           }
+          
+          return Helpers::makeResponse($status_code,$status,$message,$user);
     }
 
 

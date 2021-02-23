@@ -4,6 +4,7 @@ namespace App;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Auth;
+use Helpers;
 class Contact extends Model
 {
     protected $fillable = [
@@ -43,69 +44,76 @@ class Contact extends Model
     }
     public function getContactDetailById($id)
     {
-
+        $status_code = 404;
+        $status = "Failed";
+        $message = "contact not found";
+        $contact = [];
         $contact = $this->with('contacts:id,first_name,last_name,email,phone,created_at,updated_at')->where('id',$id)->first();
-       if($contact != null){
-        return response()->json([
-            'status_code' => 200,
-            'message' => 'Contact fetched successfully',
-            'data' => $contact
-          ]); 
-       }
-       return response()->json([
-        'status_code' => 404,
-        'message' => 'User not found',
-        'data' => []
-      ]); 
+       
+        if($contact != null){
+       
+        $status_code = 200;
+        $status = "Success";
+        $message = "Contact fetched successfully";
+        $contact;
 
+       }
+
+
+     return Helpers::makeResponse($status_code,$status,$message,($contact == NULL) ? [] : $contact);
+     
     }
     
     public function updateContact($request,$id)
     {
         $contact_id = $this->where('id',$id)->pluck('contact_id');
-        if(!count($contact_id)){
-            return response()->json([
-                'status_code' => 404,
-                'message' => 'Contact not found'
-              ]);
+        $status_code = 404;
+        $status = "Failed";
+        $message = "contact not found";
+        $contact = [];
+
+        if(count($contact_id)){
+              $contact = [
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'email' => $request->email,
+                'phone' => $request->phone
+            ];
+            
+           if(User::where('id',$contact_id)->update($contact)){
+
+            $status_code = 200;
+            $status = "Success";
+            $message = "Contact fetched successfully";
+            $contact;
+            
+            }
+           
         }
-        $contact = [
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'phone' => $request->phone
-        ];
-       if(User::where('id',$contact_id)->update($contact)){
-            return response()->json([
-                'status_code' => 200,
-                'message' => 'Contact updated successfully',
-                'data' => $contact
-              ]);
-        }else{
-            return response()->json([
-                'status_code' => 422,
-                'message' => 'Contact updation failed',
-                'data' => $contact
-              ]);
-        }
-    }
+        
+    
+    return Helpers::makeResponse($status_code,$status,$message,$contact);
+    
+}
     public function ContactdeleteById($id)
     {
         $user = $this->find($id);
+        $status_code = 404;
+        $status = "Failed";
+        $message = "contact not found";
+        $contact = [];
         if($user != NULL){
             $contact = User::where('id',$user->contact_id)->get();
             $user->delete();
             if(User::where('id',$user->contact_id)->delete()){
-                return response()->json([
-                    'status_code' => 200,
-                    'message' => 'Contact deleted successfully',
-                    'data' => $contact[0]
-                  ]);
+                $status_code = 200;
+                $status = "Success";
+                $message = "Contact deleted successfully";
+                $contact;
             }
         }
-        return response()->json([
-            'status_code' => 404,
-            'message' => 'Contact not found'
-          ]);
+        
+        return Helpers::makeResponse($status_code,$status,$message,($contact != NULL ) ? $contact[0] : []);
+
     }
 }

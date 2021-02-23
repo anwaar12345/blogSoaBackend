@@ -12,6 +12,7 @@ use App\User;
 use App\Contact;
 use Illuminate\Support\Facades\Hash;
 use Auth;
+use Helpers;
 class UserController extends Controller
 {
 public function __construct()
@@ -19,24 +20,24 @@ public function __construct()
     $this->user = new User();
     $this->contact = new Contact();
 }
+
 public function userContacts(Request $request)
 {
     $users= $this->contact->userContacts($request);
-    if($users->count()){
+    $status_code = 404;
+    $status = "Failed";
+    $message = "contacts not found";
 
-        return response()->json([
-            'status_code' => 200,
-            'message' => 'Contacts fetched successfully',
-             'data' => $users   
-            ]);
+    if($users->count()){
+      $status_code = 200;
+      $status = "Success";
+      $message = "Contacts fetched successfully";
+      $users;
     }
-    return response()->json([
-        'status_code' => 200,
-        'message' => 'contacts not found',
-         'data' => []   
-        ]);
-    
+
+    return Helpers::makeResponse($status_code,$status,$message,$users);
 }
+
 public function login(UserRequest $request)
 {
     $validatedData = $request->validated();
@@ -65,25 +66,30 @@ public function createContact(RequestContact $request)
 
 public function userLogout(Request $request)
 {
+
+  $status_code = 404;
+  $status = "Failed";
+  $message = "User not found";
+
   $token = $request->bearerToken('api-token'); 
   $user = User::where('id',Auth::user()->id)->first();
-  foreach($user->tokens as $token) {
-    $token->revoke();   
-}
+  
   if($user != null) {
+
     $userArray = ['api_token' => null];
-    $logout = User::where('id',$user->id)->update($userArray);
-    if($logout) {
-    Auth::user()->AauthAcessToken()->delete();
-      return response()->json([
-        'message' => 'User Logged Out',
-      ]);
+
+    if(User::where('id',$user->id)->update($userArray) && Auth::user()->AauthAcessToken()->delete()) {
+
+    foreach($user->tokens as $token) {
+       $token->revoke();   
     }
-  } else {
-    return response()->json([
-      'message' => 'User not found',
-    ]);
-  }
+
+    $status_code = 200;
+    $status = "Success";
+    $message = "User Logged Out Successfully";
+    
+    }}
+    return Helpers::makeResponse($status_code,$status,$message,[]);
 }
 
 
